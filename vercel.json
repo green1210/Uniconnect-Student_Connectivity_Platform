@@ -5,8 +5,8 @@
       "src": "apps/client/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "apps/client/dist"
-      }
+          "distDir": "dist"
+        }
     }
   ],
   "routes": [

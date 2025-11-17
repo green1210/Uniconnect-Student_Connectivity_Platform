@@ -1,0 +1,169 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  username  String?   @unique
+  name      String?
+  role      String    @default("student")
+  avatar    String?
+  provider  String?   @default("email")
+  providerId String?
+  posts     Post[]
+  threads   Thread[]  @relation("ThreadAuthor")
+  projects  Project[] @relation("ProjectOwner")
+  projectMemberships ProjectMember[] @relation("ProjectMembers")
+  projectMessages    ProjectMessage[] @relation("ProjectMessages")
+  materials Material[] @relation("MaterialUploader")
+  comments  Comment[]
+  likes     Like[]
+  profile   Profile?
+  sentSyncRequests     SyncRequest[] @relation("SyncRequestSender")
+  receivedSyncRequests SyncRequest[] @relation("SyncRequestReceiver")
+  syncs                Sync[]        @relation("SyncInitiator")
+  syncedWith           Sync[]        @relation("SyncTarget")
+  createdAt DateTime  @default(now())
+}
+
+model Profile {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @unique
+  bio       String?
+  university String?
+  major     String?
+  year      String?
+  interests String[]
+  banner    String?
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  content   String?
+  mediaUrl  String?  @db.Text
+  mediaType String?  @default("image")
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+  likes     Like[]
+  createdAt DateTime @default(now())
+}
+
+model Thread {
+  id        String   @id @default(cuid())
+  title     String
+  body      String
+  category  String?  @default("general")
+  views     Int      @default(0)
+  author    User     @relation("ThreadAuthor", fields: [authorId], references: [id])
+  authorId  String
+  comments  Comment[]
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  body      String
+  thread    Thread   @relation(fields: [threadId], references: [id])
+  threadId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+  createdAt DateTime @default(now())
+}
+
+model Project {
+  id          String          @id @default(cuid())
+  name        String
+  summary     String?
+  description String?
+  coverImage  String?
+  tags        String?
+  category    String          @default("other")
+  status      String          @default("recruiting")
+  teamSize    Int             @default(1)
+  lookingFor  String?
+  owner       User            @relation("ProjectOwner", fields: [ownerId], references: [id])
+  ownerId     String
+  members     ProjectMember[]
+  messages    ProjectMessage[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @default(now()) @updatedAt
+}
+
+model ProjectMember {
+  id        String   @id @default(cuid())
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+  user      User     @relation("ProjectMembers", fields: [userId], references: [id])
+  userId    String
+  role      String   @default("member")
+  joinedAt  DateTime @default(now())
+
+  @@unique([projectId, userId])
+}
+
+model ProjectMessage {
+  id        String   @id @default(cuid())
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+  sender    User     @relation("ProjectMessages", fields: [senderId], references: [id])
+  senderId  String
+  content   String
+  createdAt DateTime @default(now())
+}
+
+model Material {
+  id         String   @id @default(cuid())
+  title      String
+  url        String?
+  filePath   String?
+  fileName   String?
+  fileSize   Int?
+  fileType   String?
+  category   String   @default("notes")
+  uploader   User     @relation("MaterialUploader", fields: [uploaderId], references: [id])
+  uploaderId String
+  createdAt  DateTime @default(now())
+}
+
+model Like {
+  id        String  @id @default(cuid())
+  user      User    @relation(fields: [userId], references: [id])
+  userId    String
+  post      Post    @relation(fields: [postId], references: [id])
+  postId    String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, postId])
+}
+
+model SyncRequest {
+  id        String   @id @default(cuid())
+  sender    User     @relation("SyncRequestSender", fields: [senderId], references: [id])
+  senderId  String
+  receiver  User     @relation("SyncRequestReceiver", fields: [receiverId], references: [id])
+  receiverId String
+  status    String   @default("pending") // pending, accepted, rejected
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([senderId, receiverId])
+}
+
+model Sync {
+  id        String   @id @default(cuid())
+  user1     User     @relation("SyncInitiator", fields: [user1Id], references: [id])
+  user1Id   String
+  user2     User     @relation("SyncTarget", fields: [user2Id], references: [id])
+  user2Id   String
+  createdAt DateTime @default(now())
+
+  @@unique([user1Id, user2Id])
+}

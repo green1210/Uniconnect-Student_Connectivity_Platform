@@ -1,0 +1,23 @@
+{
+  "name": "uniconnect",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": ["apps/client", "apps/server"],
+  "scripts": {
+    "install-all": "npm install",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:client": "npm --workspace apps/client run dev",
+    "dev:server": "npm --workspace apps/server run dev",
+    "build": "npm --workspace apps/client run build && npm --workspace apps/server run build",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "prisma:generate": "npm --workspace apps/server run prisma:generate",
+    "prisma:seed": "npm --workspace apps/server run prisma:seed"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react": "^7.33.2",
+    "prettier": "^3.2.5"
+  }
+}

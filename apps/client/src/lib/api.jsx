@@ -21,6 +21,10 @@
  * // DELETE request
  * await api('/feed/123', { method: 'DELETE' });
  */
+
+// Use VITE_API_URL in production, relative path in development
+const API_BASE = import.meta.env.VITE_API_URL || '';
+
 export async function api(endpoint, options = {}) {
   const token = localStorage.getItem('auth_token');
   
@@ -33,8 +37,9 @@ export async function api(endpoint, options = {}) {
     }
   };
 
-  // Ensure endpoint starts with /api
-  const url = endpoint.startsWith('/api') ? endpoint : `/api${endpoint}`;
+  // Build full URL: use API_BASE for production, relative for dev
+  const path = endpoint.startsWith('/api') ? endpoint : `/api${endpoint}`;
+  const url = API_BASE ? `${API_BASE.replace(/\/$/, '')}${path}` : path;
 
   const response = await fetch(url, config);
 

@@ -66,8 +66,34 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error', message: err.message });
 });
 
-const port = process.env.PORT || 4000;
-const server = app.listen(port, () => console.log(`API running on :${port}`));
+const DEFAULT_PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
+let currentPort = DEFAULT_PORT;
+const MAX_RETRIES = 5;
+
+function startServer(portToTry, retriesLeft) {
+  const server = app.listen(portToTry, () => console.log(`API running on :${portToTry}`));
+
+  server.on('error', (error) => {
+    if (error && error.code === 'EADDRINUSE') {
+      console.error(`[SERVER_ERROR] Port ${portToTry} in use.`);
+      if (retriesLeft > 0) {
+        const nextPort = portToTry + 1;
+        console.log(`[SERVER] Retrying on port ${nextPort} (${retriesLeft} retries left)`);
+        setTimeout(() => startServer(nextPort, retriesLeft - 1), 500);
+        return;
+      }
+      console.error('[SERVER_ERROR] No available ports. Exiting.');
+      process.exit(1);
+    }
+
+    console.error('[SERVER_ERROR]', error && error.message ? error.message : error);
+    process.exit(1);
+  });
+
+  return server;
+}
+
+startServer(currentPort, MAX_RETRIES);
 
 // Catch ALL errors
 process.on('unhandledRejection', (reason, promise) => {
@@ -80,7 +106,5 @@ process.on('uncaughtException', (error) => {
   process.exit(1);
 });
 
-server.on('error', (error) => {
-  console.error('[SERVER_ERROR]', error.message);
-});
+// server errors are handled in startServer
 

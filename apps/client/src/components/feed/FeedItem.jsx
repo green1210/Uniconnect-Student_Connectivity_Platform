@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { getMediaUrl } from '../../lib/api.jsx';
 
 export default function FeedItem({ id, author = 'Student User', authorName, authorUsername, authorId, authorAvatar, content = 'Sharing a study tip!', time = '2h', canDelete = false, onDelete, onEdit, mediaUrl, mediaType }) {
 	const [liked, setLiked] = useState(false);
@@ -84,7 +85,7 @@ export default function FeedItem({ id, author = 'Student User', authorName, auth
 				<div className="flex items-center gap-3">
 					{authorAvatar ? (
 						<img 
-							src={authorAvatar} 
+							src={getMediaUrl(authorAvatar)} 
 							alt={authorName || author}
 							className="w-8 h-8 rounded-full object-cover"
 						/>
@@ -161,13 +162,13 @@ export default function FeedItem({ id, author = 'Student User', authorName, auth
 				<div className="w-full bg-black">
 					{mediaType === 'video' ? (
 						<video 
-							src={mediaUrl} 
+							src={getMediaUrl(mediaUrl)} 
 							controls 
 							className="w-full max-h-[585px] object-contain"
 						/>
 					) : (
 						<img 
-							src={mediaUrl} 
+							src={getMediaUrl(mediaUrl)} 
 							alt="Post media"
 							className="w-full aspect-square object-cover"
 							loading="lazy"

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useUser, UserButton, useClerk } from '@clerk/clerk-react';
 import { useProfile } from '../profile/ProfileContext.jsx';
-import { api } from '../../lib/api.jsx';
+import { api, getMediaUrl } from '../../lib/api.jsx';
 
 export default function Navbar() {
   const { isSignedIn, user } = useUser();
@@ -51,7 +51,7 @@ export default function Navbar() {
                   >
                     {profile?.avatar ? (
                       <img
-                        src={profile.avatar}
+                        src={getMediaUrl(profile.avatar)}
                         alt={profile?.name || 'Profile'}
                         className="w-8 h-8 rounded-full object-cover border-2 border-slate-200"
                       />
@@ -74,7 +74,7 @@ export default function Navbar() {
                           <div className="flex items-center gap-3">
                             {profile?.avatar ? (
                               <img
-                                src={profile.avatar}
+                                src={getMediaUrl(profile.avatar)}
                                 alt={profile?.name || 'Profile'}
                                 className="w-12 h-12 rounded-full object-cover"
                               />

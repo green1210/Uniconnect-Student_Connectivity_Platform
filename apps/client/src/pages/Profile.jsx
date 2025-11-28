@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useUser } from '@clerk/clerk-react';
 import { useProfile } from '../components/profile/ProfileContext.jsx';
 import FeedItem from '../components/feed/FeedItem.jsx';
-import { api } from '../lib/api.jsx';
+import { api, getMediaUrl } from '../lib/api.jsx';
 
 export default function Profile() {
   const { user } = useUser();
@@ -277,7 +277,7 @@ export default function Profile() {
                 <div className="flex items-center gap-3">
                   {profile.avatar ? (
                     <img 
-                      src={profile.avatar} 
+                      src={getMediaUrl(profile.avatar)} 
                       alt={profile.name}
                       className="w-10 h-10 rounded-full object-cover"
                     />
@@ -353,7 +353,7 @@ export default function Profile() {
         {/* Banner */}
         <div className="h-80 relative overflow-hidden group">
           {profile.profile?.banner ? (
-            <img src={profile.profile.banner} alt="Banner" className="w-full h-full object-cover" />
+            <img src={getMediaUrl(profile.profile.banner)} alt="Banner" className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600" />
           )}
@@ -383,7 +383,7 @@ export default function Profile() {
               <div className="relative">
                 {profile.avatar ? (
                   <img 
-                    src={profile.avatar} 
+                    src={getMediaUrl(profile.avatar)} 
                     alt={profile.name} 
                     className="w-48 h-48 rounded-3xl border-8 border-white shadow-2xl object-cover bg-white"
                   />

@@ -25,6 +25,25 @@
 // Use VITE_API_URL in production, relative path in development
 const API_BASE = import.meta.env.VITE_API_URL || '';
 
+/**
+ * Get the full URL for a media asset (avatar, banner, uploads)
+ * In production, prepends the API_BASE URL
+ * In development, returns the path as-is (served by Vite proxy)
+ */
+export function getMediaUrl(path) {
+  if (!path) return null;
+  // If already a full URL (e.g., Cloudinary), return as-is
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path;
+  }
+  // In production, prepend API base URL
+  if (API_BASE) {
+    return `${API_BASE.replace(/\/$/, '')}${path}`;
+  }
+  // In development, return as-is
+  return path;
+}
+
 export async function api(endpoint, options = {}) {
   const token = localStorage.getItem('auth_token');
   

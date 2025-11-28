@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useUser } from '@clerk/clerk-react';
 import { useProfile } from '../profile/ProfileContext.jsx';
-import { api } from '../../lib/api.jsx';
+import { api, getMediaUrl } from '../../lib/api.jsx';
 
 const links = [
   { 
@@ -152,7 +152,7 @@ export default function Sidebar() {
             <Link to="/profile" className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 transition-all">
               {profile?.avatar ? (
                 <img
-                  src={profile.avatar}
+                  src={getMediaUrl(profile.avatar)}
                   alt={profile?.name || 'Profile'}
                   className="w-10 h-10 rounded-full object-cover border-2 border-slate-200"
                 />
@@ -265,7 +265,7 @@ export default function Sidebar() {
             <div className="flex items-center gap-3">
               {profile?.avatar ? (
                 <img
-                  src={profile.avatar}
+                  src={getMediaUrl(profile.avatar)}
                   alt={profile?.name || 'Profile'}
                   className="w-10 h-10 rounded-full object-cover border-2 border-slate-200"
                 />
